@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class PoissonProcess:
     def __init__(self, rate):
         """
