@@ -1,7 +1,7 @@
 import numpy as np
 
 class MarkovChain:
-    def __init__(self, transition_matrix: np.ndarray, states: list,stationary_method='power'):
+    def __init__(self, transition_matrix: np.ndarray, states: list, stationary_method='power'):
         """
         :param transition_matrix: state transition probability matrix（n x n）
         :param states: Status label list（Length n）
@@ -20,12 +20,12 @@ class MarkovChain:
         self.current_state = None
         self.stationary_method = stationary_method
 
-    def set_initial(self, state):
+    def _set_initial(self, state):
         if state not in self.state_indices:
             raise ValueError("Initial state does not exist")
         self.current_state = self.state_indices[state]
 
-    def next_state(self):
+    def _next_state(self):
         if self.current_state is None:
             raise RuntimeError("Initial state not set")
         next_idx = np.random.choice(
@@ -37,23 +37,23 @@ class MarkovChain:
 
     def generate_sequence(self, steps: int, initial_state=None):
         """
-        Generate status sequence
+        Generate status sequence.
         :param steps: Transfer steps
         :param initial_state: Initial state (optional)
         :return: Status sequence list
         """
         if initial_state is not None:
-            self.set_initial(initial_state)
+            self._set_initial(initial_state)
         elif self.current_state is None:
             raise RuntimeError("Initial state needs to be specified")
 
         sequence = [self.states[self.current_state]]
         for _ in range(steps):
-            sequence.append(self.next_state())
+            sequence.append(self._next_state())
         return sequence
 
     def _stationary_distribution_power(self, max_iter=1000, tol=1e-6):
-        """Calculation of steady state distribution (power iteration method)"""
+        """Calculation of steady state distribution (power iteration method)."""
         n = len(self.states)
         pi = np.ones(n) / n
 
@@ -65,13 +65,13 @@ class MarkovChain:
         return {s: pi[i] for i, s in enumerate(self.states)}
 
     def _stationary_distribution_eigen(self, tol=1e-9):
-        """Calculation of steady-state distribution using eigenvector method (for reversible chains）"""
+        """Calculation of steady-state distribution using eigenvector method (for reversible chains."""
 
         eigenvalues, eigenvectors = np.linalg.eig(self.P.T)
 
         close_to_one = np.isclose(eigenvalues, 1, atol=tol)
         if not np.any(close_to_one):
-            raise ValueError("The eigenvector with eigenvalue 1 is not found, and there may not be a unique steady-state distribution")
+            raise ValueError("The eigenvector with eigenvalue 1 is not found, and there may not be a unique steady-state distribution.")
 
         idx = np.argmax(close_to_one)
         pi = eigenvectors[:, idx].real
@@ -86,14 +86,16 @@ class MarkovChain:
 
         pi = np.abs(pi)
         if np.any(pi < -tol):
-            raise ValueError("There is a negative probability value, which may not be an effective steady-state distribution")
+            raise ValueError("There is a negative probability value, which may not be an effective steady-state distribution.")
         pi[pi < 0] = 0
 
         pi /= pi.sum()
         return {s: pi[i] for i, s in enumerate(self.states)}
 
     def _stationary_distribution_linear(self, tol=1e-10):
-        """The steady-state distribution is calculated by solving the system of linear equations (P ^ t - I) π=0 and Σπ=1"""
+        """
+        The steady-state distribution is calculated by solving the system of linear equations (P ^ t - I) π=0 and Σπ=1.
+        """
         n = len(self.states)
 
         A = np.zeros((n, n))
@@ -127,7 +129,6 @@ class MarkovChain:
 
         return {s: pi[i] for i, s in enumerate(self.states)}
 
-
     def stationary_distribution(self, method='power', **kwargs):
         if method == 'power':
             return self._stationary_distribution_power(**kwargs)
@@ -137,7 +138,6 @@ class MarkovChain:
             return self._stationary_distribution_linear(**kwargs)
         else:
             raise ValueError("Unsupported method parameter, optional: ' power', 'eigen', 'linear'")
-
 
     def transition_count(self, sequence):
         count = np.zeros_like(self.P)
