@@ -100,23 +100,19 @@ class MarkovChain:
         A[:-1, :] = (self.P.T - np.eye(n))[:-1]
         A[-1, :] = 1
 
-        # 构造右侧向量
         b = np.zeros(n)
         b[-1] = 1
 
-        # 求解线性方程组
         try:
             pi = np.linalg.solve(A, b)
         except np.linalg.LinAlgError:
-            # 使用最小二乘法处理秩不足的情况
             pi, residuals, rank, _ = np.linalg.lstsq(A, b, rcond=None)
             if rank < n:
                 raise ValueError("The rank of the coefficient matrix is insufficient to obtain a unique solution.")
 
-        # 数值稳定性处理
-        pi = np.real(pi)  # 确保实数解
-        pi[pi < 0] = 0  # 清除微小负值
-        pi /= pi.sum()  # 重新归一化
+        pi = np.real(pi)
+        pi[pi < 0] = 0
+        pi /= pi.sum()
 
         if not self.verify_stationary(dict(zip(self.states, pi)), tol):
             raise RuntimeError("The solution result of linear equations method does not meet the steady-state condition")
@@ -125,7 +121,6 @@ class MarkovChain:
         b_reg = A.T @ b
         pi = np.linalg.solve(A_reg, b_reg)
 
-        # 添加残差检查
         residual = np.linalg.norm(A @ pi - b)
         if residual > 1e-6:
             raise RuntimeError(f"The residual error of solving linear equations is too large：{residual:.2e}")
