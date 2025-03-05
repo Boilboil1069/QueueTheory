@@ -245,7 +245,7 @@ class InfiniteMarkovChain:
     def _empirical_stationary(self) -> Callable[[float], float]:
         hist, edges = self.empirical_distribution()
         return lambda x: hist[
-            np.clip(np.digitize(x, edges) - 1, 0, len(hist) - 1)  # 添加边界保护
+            np.clip(np.digitize(x, edges) - 1, 0, len(hist) - 1)
         ]
 
     def _power_iteration_stationary(self,
