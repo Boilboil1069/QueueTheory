@@ -17,7 +17,6 @@ class Gamma(numeric):
         self.f = lambda var: (self.scale ** self.shape) * var ** (self.shape - 1) * sympy_exp(-self.scale * var) / sympy_gamma(self.shape)
         super().__init__(self.f, 'x', (0, np.inf))
 
-
     def expectation(self):
         """
         :return:The expectation of gamma distribution.

@@ -14,7 +14,11 @@ class numeric:
         self.f = f(self.var)
         self.interval_upper = interval[1]
         self.interval_lower = interval[0]
-
+    def display_func(self):
+        """
+        :return: The sympy expression of gamma distribution.
+        """
+        print(self.f)
     def expectation(self):
         """
         :return: The expectation of f
