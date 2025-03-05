@@ -1,7 +1,7 @@
 import numpy as np
 from sympy import exp as sympy_exp, gamma as sympy_gamma
 
-from numeric import numeric
+from utils import numeric
 
 class Gamma(numeric):
     def __init__(self,shape,scale):
