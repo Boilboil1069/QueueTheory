@@ -16,7 +16,7 @@ class numeric:
         self.interval_lower = interval[0]
     def display_func(self):
         """
-        :return: The sympy expression of gamma distribution.
+        :return: Display the distribution function.
         """
         print(self.f)
     def expectation(self):
