@@ -1,4 +1,6 @@
 import numpy as np
+from typing import Callable, Optional
+from scipy.integrate import quad
 
 class MarkovChain:
     def __init__(self, transition_matrix: np.ndarray, states: list, stationary_method='power'):
@@ -169,4 +171,117 @@ class MarkovChain:
         )
         print(f"\nMax difference：{max_diff:.2e}")
 
+class InfiniteMarkovChain:
+    def __init__(self,
+                 transition_kernel: Callable[[float], Callable[[float], float]],
+                 initial_state: Optional[float] = None):
+        self.transition_kernel = transition_kernel
+        self.current_state = initial_state
+        self.state_history = []
+        if initial_state is not None:
+            self.state_history.append(initial_state)
 
+    def _set_initial(self, state: float):
+        """Set initial state for the chain"""
+        self.current_state = state
+        self.state_history = [state]
+
+    def _next_state(self):
+        """Generate next state using transition kernel"""
+        if self.current_state is None:
+            raise RuntimeError("Initial state not configured")
+        kernel = self.transition_kernel(self.current_state)
+        return kernel(np.random.random())
+
+    def generate_sequence(self, steps: int, initial_state=None):
+        """Generate state sequence with given steps"""
+        if initial_state is not None:
+            self._set_initial(initial_state)
+        elif self.current_state is None:
+            raise RuntimeError("Initial state required")
+
+        sequence = [self.current_state]
+        for _ in range(steps):
+            next_state = self._next_state()
+            sequence.append(next_state)
+            self.current_state = next_state
+        return sequence
+
+    def transition_density(self, x: float, y: float):
+        """Get transition density from state x to y"""
+        return self.transition_kernel(x)(y)
+
+    def empirical_distribution(self, bins: int = 100, samples: int = None):
+        """Estimate empirical distribution from history"""
+        if not self.state_history:
+            raise ValueError("No historical states available")
+
+        data = self.state_history[-samples:] if samples else self.state_history
+        hist, edges = np.histogram(data, bins=bins, density=True)
+        return hist, edges
+
+    def kernel_check(self, x: float, tol: float = 1e-5):
+        """Verify kernel integrates to 1 for given state"""
+        integral = np.trapezoid([self.transition_density(x, y)
+                           for y in np.linspace(0,1,1000)])
+        if not np.isclose(integral, 1, atol=tol):
+            raise ValueError(f"Kernel violation: Integrates to {integral:.4f}")
+
+    def has_stationary_distribution(self, tol: float = 1e-4, test_samples: int = 10000) -> bool:
+        hist1, _ = self.empirical_distribution(bins=100, samples=test_samples // 2)
+        hist2, _ = self.empirical_distribution(bins=100, samples=test_samples)
+        return np.linalg.norm(hist1 - hist2) < tol
+
+    def stationary_distribution(self,
+                                method: str = 'empirical',
+                                max_iter: int = 1000,
+                                tol: float = 1e-6) -> Callable[[float], float]:
+        if method == 'empirical':
+            return self._empirical_stationary()
+        elif method == 'power':
+            return self._power_iteration_stationary(max_iter, tol)
+        raise ValueError("Supported methods: 'empirical', 'power'")
+
+    def _empirical_stationary(self) -> Callable[[float], float]:
+        hist, edges = self.empirical_distribution()
+        return lambda x: hist[
+            np.clip(np.digitize(x, edges) - 1, 0, len(hist) - 1)  # 添加边界保护
+        ]
+
+    def _power_iteration_stationary(self,
+                                    max_iter: int,
+                                    tol: float) -> Callable[[float], float]:
+        pi_prev = lambda x: 1.0
+        for _ in range(max_iter):
+            pi_next = lambda y: quad(lambda x: pi_prev(x) * self.transition_density(x, y), 0, 1)[0]
+            diff = quad(lambda x: abs(pi_next(x) - pi_prev(x)), 0, 1)[0]
+            if diff < tol:
+                return pi_next
+            pi_prev = pi_next
+        raise RuntimeError(f"Failed to converge after {max_iter} iterations")
+
+    def verify_stationary(self,
+                          pi: Callable[[float], float],
+                          tol: float = 1e-4) -> bool:
+        _, edges = self.empirical_distribution()
+
+        y_samples = np.clip(np.random.random(100), edges[0], edges[-1] - 1e-6)
+
+        errors = []
+        for y in y_samples:
+            integral = quad(lambda x: pi(x) * self.transition_density(x, y),
+                            edges[0], edges[-1])[0]
+            errors.append(abs(pi(y) - integral))
+
+        return np.max(errors) < tol
+
+if __name__ == '__main__':
+    def ou_kernel(theta=0.5):
+        return lambda x: lambda y: np.exp(-(y - x * np.exp(-theta)) ** 2 / (1 - np.exp(-2 * theta)))
+
+    chain = InfiniteMarkovChain(ou_kernel())
+    chain.generate_sequence(10000, 0.0)
+
+    if chain.has_stationary_distribution():
+        pi = chain.stationary_distribution()
+        print("Stationary dist valid:", chain.verify_stationary(pi))
