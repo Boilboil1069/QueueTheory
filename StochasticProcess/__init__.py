@@ -2,10 +2,16 @@
 
 from . import Poisson
 from . import MarkovChain
+from . import MarcovProcess
 from . import BDC
+from . import IBDC
+
+
 
 __all__ = [
     'Poisson',
     'MarkovChain',
-    'BDC'
+    'MarcovProcess',
+    'BDC',
+    'IBDC'
 ]

@@ -42,9 +42,9 @@ class numeric:
 
 if __name__ == '__main__':
     x = symbols('x')
-    f_expr = x ** 2  # 直接使用SymPy表达式
+    f_expr = x ** 2
     interval = (0, 1)
-    numeric_test = numeric(lambda var: var ** 2, 'x', interval)  # 保持lambda形式但要适配符号变量
+    numeric_test = numeric(lambda var: var ** 2, 'x', interval)
     print(numeric_test.expectation())
     print(numeric_test.variance())
     print(numeric_test.moment(2, 'z'))
