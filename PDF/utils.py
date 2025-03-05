@@ -1,6 +1,4 @@
-import numpy as np
-
-from sympy import symbols, integrate
+from sympy import symbols, integrate, exp
 
 
 class numeric:
@@ -31,7 +29,7 @@ class numeric:
         """
         return integrate(((self.var - self.expectation())** 2) * self.f,(self.var,self.interval_lower, self.interval_upper))
 
-    def moment(self, n: int, m: str):
+    def moment(self, n: int, m: str = 'c'):
         """
         :param n: The order of moment
         :param m: The type of moment, z for zero-moment, c for central moment
@@ -43,6 +41,33 @@ class numeric:
             return integrate(((self.var - self.expectation()) ** n) * self.f, (self.var, self.interval_lower, self.interval_upper))
         else:
             raise ValueError('m must be z or c')
+        
+class transform(numeric):
+    def __init__(self, f: callable, var, interval: tuple):
+        """
+        :param f:  Probability density function.
+        :param var: The variable of integration
+        :param interval: The upper and lower of integration
+        """
+        super().__init__(f, var, interval)
+
+    def generating_function(self, s):
+        """
+        Generating function: G(s) = E[s^X]
+        :param s: Symbol variable
+        :return: Expr
+        """
+        return integrate(s ** self.var * self.f,
+                         (self.var, self.interval_lower, self.interval_upper))
+
+    def laplace_stieltjes_transform(self, s):
+        """
+        Laplace-Stieltjes Transform L(s) = E[e^{-sX}]
+        :param s: Symbol variable
+        :return: Expr
+        """
+        return integrate(exp(-s * self.var) * self.f, (self.var, self.interval_lower, self.interval_upper))
+
 
 if __name__ == '__main__':
     x = symbols('x')
@@ -53,3 +78,9 @@ if __name__ == '__main__':
     print(numeric_test.variance())
     print(numeric_test.moment(2, 'z'))
     print(numeric_test.moment(2, 'c'))
+
+    transform_test = transform(lambda var: var ** 2, 'x', (0, 1))
+    s = symbols('s')
+    print("\nTransform Test:")
+    print("Generating function:", transform_test.generating_function(s))
+    print("LST:", transform_test.laplace_stieltjes_transform(s))
