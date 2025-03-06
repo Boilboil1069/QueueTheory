@@ -20,7 +20,6 @@ class ContinuousTimeMarkovProcess:
     """
 
     def __init__(self, rate_matrix: np.ndarray, states: List[str]):
-        # Validate rate matrix
         if not np.allclose(rate_matrix.sum(axis=1), 0, atol=1e-6):
             raise ValueError("Rows of rate matrix must sum to zero")
         if (rate_matrix.diagonal() >= 0).any():
@@ -55,22 +54,19 @@ class ContinuousTimeMarkovProcess:
         current_idx = self.state_indices[initial_state]
 
         while current_time < duration:
-            # Get transition rates from current state
             rates = self.Q[current_idx].copy()
-            rates[current_idx] = 0  # Exclude self-transition
+            rates[current_idx] = 0
             total_rate = -self.Q[current_idx, current_idx]
 
             if total_rate == 0:
-                break  # Absorbing state
+                break
 
-            # Generate next transition time
             dwell_time = np.random.exponential(1/total_rate)
             current_time += dwell_time
 
             if current_time > duration:
                 break
 
-            # Select next state
             transition_probs = rates / total_rate
             next_idx = np.random.choice(len(self.states), p=transition_probs)
 
@@ -125,9 +121,11 @@ class ContinuousTimeMarkovProcess:
                                save_path: Optional[str] = None) -> None:
         """
         Visualize state transitions over time using step plot
+
         :param:trajectory: List of (time, state) tuples from generate_trajectory()
         :param:figsize: Figure dimensions (width, height) in inches
         :param:save_path: Optional path to save the plot image
+
         :returns:None
         """
         try:
@@ -176,7 +174,7 @@ class InfiniteContinuousTimeMarkovProcess:
             total_rate = sum(rates.values())
 
             if total_rate == 0:
-                break  # Absorbing state
+                break
 
             dwell_time = np.random.exponential(1/total_rate)
             current_time += dwell_time
