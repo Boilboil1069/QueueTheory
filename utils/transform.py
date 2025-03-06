@@ -1,6 +1,6 @@
 from sympy import integrate, exp
 
-from . import numeric
+from utils import numeric
 
 
 class transform(numeric):

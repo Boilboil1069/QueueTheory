@@ -3,7 +3,7 @@ import numpy as np
 from typing import Dict, List, Callable, Optional
 from scipy.linalg import expm
 
-from .MarkovChain import MarkovChain
+from MarkovChain import MarkovChain
 
 
 class ContinuousTimeMarkovProcess:
@@ -193,7 +193,7 @@ class InfiniteContinuousTimeMarkovProcess:
         """Construct truncated generator matrix"""
         Q = np.zeros((max_states, max_states))
 
-        for i in range(max_states):
+        for i in range(max_states - 1):
             rates = self.transition_rates(i)
             total_rate = sum(rates.values())
             Q[i,i] = -total_rate
@@ -201,6 +201,7 @@ class InfiniteContinuousTimeMarkovProcess:
             for j, r in rates.items():
                 if j < max_states:
                     Q[i,j] = r
+                    #TODO 这里需要处理生成的生灭过程最后一行行和还不是0
 
         return Q
 

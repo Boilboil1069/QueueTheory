@@ -4,7 +4,7 @@ from sympy import exp as sympy_exp
 from utils import numeric
 
 
-class Exp(numeric):
+class exp(numeric):
     def __init__(self, rate):
         """
         :param rate: rate of exponential distribution.
@@ -50,9 +50,3 @@ class Exp(numeric):
             np.random.seed(randomstate)
 
         return np.random.exponential(1 / self.rate, size)
-
-if __name__ == '__main__':
-    exp = Exp(5)
-    print(exp.expectation())
-    print(exp.variance())
-    print(exp.generate((10, 10), 1))

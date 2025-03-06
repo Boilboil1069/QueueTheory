@@ -3,11 +3,13 @@
 """
 from release import __version__
 
-from .utils import (numeric, transform)
+from .utils import (numeric, transform, Lindley)
 
-from .PDF import (exp, gamma)
+from .PDF import (exp, gamma, geo)
 
-from .StochasticProcess import (Poisson, MarkovChain, MarkovProcess, BDC, BDP)
+from .StochasticProcess import (PoissonProcess, MarkovChain, InfiniteMarkovChain, ContinuousTimeMarkovProcess,
+                                InfiniteContinuousTimeMarkovProcess, BirthDeathChain, InfiniteBirthDeathChain,
+                                BDP, SemiMarkovProcess)
 
 # from .QueueModel import ()
 
@@ -17,17 +19,23 @@ __all__ = [
     # utils
     'numeric',
     'transform',
+    'Lindley',
 
     # PDF
     'exp',
     'gamma',
+    'geo',
 
     # StochasticProcess
-    'Poisson',
+    'PoissonProcess',
     'MarkovChain',
-    'MarkovProcess',
-    'BDC',
+    'InfiniteMarkovChain',
+    'ContinuousTimeMarkovProcess',
+    'InfiniteContinuousTimeMarkovProcess',
+    'BirthDeathChain',
+    'InfiniteBirthDeathChain',
     'BDP',
+    'SemiMarkovProcess',
 
     # QueueModel
 

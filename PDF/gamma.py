@@ -4,7 +4,7 @@ from sympy import exp as sympy_exp, gamma as sympy_gamma
 from utils import numeric
 
 
-class Gamma(numeric):
+class gamma(numeric):
     def __init__(self, shape, scale):
         """
         :param shape:
@@ -41,10 +41,3 @@ class Gamma(numeric):
             np.random.seed(randomstate)
 
         return np.random.gamma(self.shape, self.scale, size=size)
-
-
-if __name__ == '__main__':
-    g = Gamma(2, 3)
-    print(g.expectation())
-    print(g.variance())
-    print(g.generate((2, 2), randomstate=1))

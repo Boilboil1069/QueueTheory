@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .MarkovChain import MarkovChain,InfiniteMarkovChain
+from MarkovChain import MarkovChain,InfiniteMarkovChain
 
 class BirthDeathChain(MarkovChain):
     """
