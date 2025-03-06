@@ -1,7 +1,7 @@
 import numpy as np
 from sympy import exp as sympy_exp
 
-from .utils import numeric
+from utils.numeric import numeric
 
 
 class Exp(numeric):
