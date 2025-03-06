@@ -172,9 +172,7 @@ class MarkovChain:
         print(f"\nMax difference：{max_diff:.2e}")
 
 class InfiniteMarkovChain:
-    def __init__(self,
-                 transition_kernel: Callable[[float], Callable[[float], float]],
-                 initial_state: Optional[float] = None):
+    def __init__(self, transition_kernel: Callable[[float], Callable[[float], float]], initial_state: Optional[float] = None):
         self.transition_kernel = transition_kernel
         self.current_state = initial_state
         self.state_history = []
@@ -241,13 +239,9 @@ class InfiniteMarkovChain:
 
     def _empirical_stationary(self) -> Callable[[float], float]:
         hist, edges = self.empirical_distribution()
-        return lambda x: hist[
-            np.clip(np.digitize(x, edges) - 1, 0, len(hist) - 1)
-        ]
+        return lambda x: hist[np.clip(np.digitize(x, edges) - 1, 0, len(hist) - 1)]
 
-    def _power_iteration_stationary(self,
-                                    max_iter: int,
-                                    tol: float) -> Callable[[float], float]:
+    def _power_iteration_stationary(self, max_iter: int, tol: float) -> Callable[[float], float]:
         pi_prev = lambda x: 1.0
         for _ in range(max_iter):
             pi_next = lambda y: quad(lambda x: pi_prev(x) * self.transition_density(x, y), 0, 1)[0]
@@ -257,17 +251,14 @@ class InfiniteMarkovChain:
             pi_prev = pi_next
         raise RuntimeError(f"Failed to converge after {max_iter} iterations")
 
-    def verify_stationary(self,
-                          pi: Callable[[float], float],
-                          tol: float = 1e-4) -> bool:
+    def verify_stationary(self, pi: Callable[[float], float], tol: float = 1e-4) -> bool:
         _, edges = self.empirical_distribution()
 
         y_samples = np.clip(np.random.random(100), edges[0], edges[-1] - 1e-6)
 
         errors = []
         for y in y_samples:
-            integral = quad(lambda x: pi(x) * self.transition_density(x, y),
-                            edges[0], edges[-1])[0]
+            integral = quad(lambda x: pi(x) * self.transition_density(x, y), edges[0], edges[-1])[0]
             errors.append(abs(pi(y) - integral))
 
         return np.max(errors) < tol
