@@ -67,20 +67,3 @@ class transform(numeric):
         :return: Expr
         """
         return integrate(exp(-s * self.var) * self.f, (self.var, self.interval_lower, self.interval_upper))
-
-
-if __name__ == '__main__':
-    x = symbols('x')
-    f_expr = x ** 2
-    interval = (0, 1)
-    numeric_test = numeric(lambda var: var ** 2, 'x', interval)
-    print(numeric_test.expectation())
-    print(numeric_test.variance())
-    print(numeric_test.moment(2, 'z'))
-    print(numeric_test.moment(2, 'c'))
-
-    transform_test = transform(lambda var: var ** 2, 'x', (0, 1))
-    s = symbols('s')
-    print("\nTransform Test:")
-    print("Generating function:", transform_test.generating_function(s))
-    print("LST:", transform_test.laplace_stieltjes_transform(s))
