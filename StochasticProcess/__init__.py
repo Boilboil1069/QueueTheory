@@ -13,5 +13,5 @@ __all__ = [
     'MarkovChain',
     'MarkovProcess',
     'BDC',
-    'BDP.py'
+    'BDP'
 ]
