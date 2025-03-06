@@ -45,7 +45,7 @@ class ContinuousTimeMarkovProcess:
         :param plot:
         :param duration: Total simulation time
         :param initial_state: Starting state
-        :return: List of (transition_time, state) tuples
+        :return List of (transition_time, state) tuples
         """
         self._validate_initial_state(initial_state)
 
@@ -122,11 +122,11 @@ class ContinuousTimeMarkovProcess:
         """
         Visualize state transitions over time using step plot
 
-        :param:trajectory: List of (time, state) tuples from generate_trajectory()
-        :param:figsize: Figure dimensions (width, height) in inches
-        :param:save_path: Optional path to save the plot image
+        :param trajectory: List of (time, state) tuples from generate_trajectory()
+        :param figsize: Figure dimensions (width, height) in inches
+        :param save_path: Optional path to save the plot image
 
-        :returns:None
+        :returns None
         """
         try:
             import matplotlib.pyplot as plt
