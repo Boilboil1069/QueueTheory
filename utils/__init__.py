@@ -1,6 +1,6 @@
 # /utils/__init__.py
-from . import numeric
-from . import transform
+from .numeric import numeric
+from .transform import transform
 
 __all__ = [
     'numeric',
