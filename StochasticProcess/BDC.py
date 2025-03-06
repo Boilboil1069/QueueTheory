@@ -13,9 +13,9 @@ class BirthDeathChain(MarkovChain):
     -Can only transfer to adjacent state or keep current state
     -Boundary state processing (state 0 cannot die, state n cannot be born)
 
-    : param birth_rates:  Birth rate list (length n), birth_rates[i] indicates the probability from state I to i+1
-    : param death_rates:  Mortality list (length n), death_rates[i] indicates the probability from state i+1 to I
-    : param states:  Optional status label (default is digital status)
+    :param birth_rates:  Birth rate list (length n), birth_rates[i] indicates the probability from state I to i+1
+    :param death_rates:  Mortality list (length n), death_rates[i] indicates the probability from state i+1 to I
+    :param states:  Optional status label (default is digital status)
     """
     def __init__(self, birth_rates, death_rates, states=None):
         self._validate_rates(birth_rates, death_rates)
@@ -79,7 +79,6 @@ class BirthDeathChain(MarkovChain):
     def analytic_stationary(self):
         """
         Calculating the analytic steady state distribution of birth and death processes
-        Formula: π ˊ u i=π ˊ u 0 * Πˊ u {k=0} ^ {i-1} (birth ˊ U K/death ˊ u {k+1})
         """
         pi0 = 1.0
         product = 1.0
@@ -131,9 +130,9 @@ class InfiniteBirthDeathChain(InfiniteMarkovChain):
         """
         Initialize infinite birth-death chain
 
-        Args:
-            birth_fn: Function returning birth probability for given state
-            death_fn: Function returning death probability for given state
+
+        :param birth_fn: Function returning birth probability for given state
+        :param death_fn: Function returning death probability for given state
         """
         self.birth_fn = birth_fn
         self.death_fn = death_fn
@@ -166,12 +165,11 @@ class InfiniteBirthDeathChain(InfiniteMarkovChain):
         Formula:
         π_i = π_0 * Π_{k=0}^{i-1} (λ_k / μ_{k+1})
 
-        Args:
-            max_states: Maximum number of states to calculate
-            tol: Tolerance for early termination
 
-        Returns:
-            Dictionary of {state: probability}
+        :param max_states: Maximum number of states to calculate
+        :param tol: Tolerance for early termination
+
+        :returns Dictionary of {state: probability}
         """
         pi = [1.0]  # π_0
         product = 1.0
@@ -199,9 +197,9 @@ class InfiniteBirthDeathChain(InfiniteMarkovChain):
         """
         Visualize stationary distribution (truncated)
 
-        Args:
-            max_states: Number of states to display
-            figsize: Figure dimensions
+
+        :param max_states: Number of states to display
+        :param figsize: Figure dimensions
         """
         pi = self.analytic_stationary()
         states = list(pi.keys())[:max_states]
