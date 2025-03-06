@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .MarkovChain import MarkovChain
+from .MarkovChain import MarkovChain,InfiniteMarkovChain
 
 class BirthDeathChain(MarkovChain):
     """
@@ -93,7 +93,7 @@ class BirthDeathChain(MarkovChain):
         pi = [pi0]
         current = pi0
         for i in range(1, self.N):
-            current *= (self.birth[i-1] + 1e-12) / (self.death[i-1] + 1e-12)
+            current *= self.birth[i-1] / self.death[i-1]
             pi.append(current)
 
         return {s: pi[i] for i, s in enumerate(self.states)}
@@ -112,3 +112,106 @@ class BirthDeathChain(MarkovChain):
         plt.title('Steady state distribution comparison')
         plt.legend()
         plt.show()
+
+class InfiniteBirthDeathChain(InfiniteMarkovChain):
+    """
+    Infinite state birth-death chain implementation
+
+    Features:
+    - State space: {0, 1, 2, ...}
+    - Dynamic transition probabilities via birth/death functions
+    - Analytical stationary distribution calculation
+    - Visualization support
+
+    :param birth_fn: Function(i) returning birth probability at state i
+    :param death_fn: Function(i) returning death probability at state i
+    """
+
+    def __init__(self, birth_fn, death_fn):
+        """
+        Initialize infinite birth-death chain
+
+        Args:
+            birth_fn: Function returning birth probability for given state
+            death_fn: Function returning death probability for given state
+        """
+        self.birth_fn = birth_fn
+        self.death_fn = death_fn
+        if death_fn(0) != 0:
+            raise ValueError("Death rate at state 0 must be zero")
+        super().__init__(self._transition_probs)
+
+    @property
+    def transition_probs(self):
+        return self._transition_probs
+
+    def _transition_probs(self, i):
+        """Generate transition probability distribution for state i"""
+        probs = {}
+        if i == 0:  # Handle boundary state
+            probs[0] = 1 - self.birth_fn(0)
+            probs[1] = self.birth_fn(0)
+        else:
+            b = self.birth_fn(i)
+            d = self.death_fn(i)
+            probs[i-1] = d
+            probs[i] = 1 - (b + d)
+            probs[i+1] = b
+        return probs
+
+    def analytic_stationary(self, max_states=1000, tol=1e-9):
+        """
+        Calculate analytical stationary distribution (truncated)
+
+        Formula:
+        π_i = π_0 * Π_{k=0}^{i-1} (λ_k / μ_{k+1})
+
+        Args:
+            max_states: Maximum number of states to calculate
+            tol: Tolerance for early termination
+
+        Returns:
+            Dictionary of {state: probability}
+        """
+        pi = [1.0]  # π_0
+        product = 1.0
+
+        for i in range(1, max_states):
+            try:
+                ratio = self.birth_fn(i-1) / self.death_fn(i)
+            except ZeroDivisionError:
+                raise ValueError(f"Death rate μ_{i} cannot be zero")
+
+            product *= ratio
+            current = pi[0] * product
+
+            # Early termination for negligible probabilities
+            if current < tol and i > 10:
+                break
+
+            pi.append(current)
+
+        # Normalize probabilities
+        total = sum(pi)
+        return {i: p/total for i, p in enumerate(pi)}
+
+    def plot_stationary(self, max_states=20, figsize=(10,6)):
+        """
+        Visualize stationary distribution (truncated)
+
+        Args:
+            max_states: Number of states to display
+            figsize: Figure dimensions
+        """
+        pi = self.analytic_stationary()
+        states = list(pi.keys())[:max_states]
+        probs = [pi[s] for s in states]
+
+        plt.figure(figsize=figsize)
+        plt.bar(states, probs, alpha=0.7, edgecolor='k')
+        plt.xlabel('State', fontsize=12)
+        plt.ylabel('Probability', fontsize=12)
+        plt.title('Stationary Distribution (Truncated)', fontsize=14)
+        plt.grid(True, alpha=0.3)
+        plt.show()
+

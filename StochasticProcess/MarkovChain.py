@@ -232,10 +232,7 @@ class InfiniteMarkovChain:
         hist2, _ = self.empirical_distribution(bins=100, samples=test_samples)
         return np.linalg.norm(hist1 - hist2) < tol
 
-    def stationary_distribution(self,
-                                method: str = 'empirical',
-                                max_iter: int = 1000,
-                                tol: float = 1e-6) -> Callable[[float], float]:
+    def stationary_distribution(self, method: str = 'empirical', max_iter: int = 1000, tol: float = 1e-6) -> Callable[[float], float]:
         if method == 'empirical':
             return self._empirical_stationary()
         elif method == 'power':
