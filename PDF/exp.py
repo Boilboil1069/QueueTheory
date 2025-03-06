@@ -1,5 +1,5 @@
-from sympy import exp as sympy_exp
 import numpy as np
+from sympy import exp as sympy_exp
 
 from .utils import numeric
 
