@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from math import exp, isclose
-from MarkovChain import MarkovChain
+from .MarkovChain import MarkovChain
 
 class BirthDeathChain(MarkovChain):
     """

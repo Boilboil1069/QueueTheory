@@ -58,17 +58,3 @@ class PoissonProcess:
         :return: 间隔时间数组
         """
         return np.random.exponential(1 / self.rate, size)
-
-
-# 使用示例
-if __name__ == "__main__":
-    pp = PoissonProcess(0.5)  # 每单位时间发生0.次事件的泊松过程
-
-    # 生成10个时间单位内的事件
-    events = pp.generate_events(T=10)
-    print(f"事件发生时间：{events}")
-    print(f"事件数量：{len(events)}")
-
-    # 理论值验证
-    print(f"期望事件数：{pp.expectation(10)}")
-    print(f"事件间隔样本均值：{pp.time_between_events(1000).mean():.3f} (理论值：{1 / 0.5:.1f})")

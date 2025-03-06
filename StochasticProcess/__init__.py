@@ -4,7 +4,7 @@ from . import Poisson
 from . import MarkovChain
 from . import MarkovProcess
 from . import BDC
-from . import IBDC
+from . import BDP
 
 
 
@@ -13,5 +13,5 @@ __all__ = [
     'MarkovChain',
     'MarkovProcess',
     'BDC',
-    'IBDC'
+    'BDP.py'
 ]

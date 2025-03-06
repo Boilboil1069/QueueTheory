@@ -274,14 +274,3 @@ class InfiniteMarkovChain:
             errors.append(abs(pi(y) - integral))
 
         return np.max(errors) < tol
-
-if __name__ == '__main__':
-    def ou_kernel(theta=0.5):
-        return lambda x: lambda y: np.exp(-(y - x * np.exp(-theta)) ** 2 / (1 - np.exp(-2 * theta)))
-
-    chain = InfiniteMarkovChain(ou_kernel())
-    chain.generate_sequence(10000, 0.0)
-
-    if chain.has_stationary_distribution():
-        pi = chain.stationary_distribution()
-        print("Stationary dist valid:", chain.verify_stationary(pi))
