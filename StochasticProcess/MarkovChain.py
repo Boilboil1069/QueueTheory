@@ -8,7 +8,6 @@ class MarkovChain:
         :param transition_matrix: state transition probability matrix（n x n）
         :param states: Status label list（Length n）
         """
-        # 参数校验
         if not np.allclose(transition_matrix.sum(axis=1), 1):
             raise ValueError("The sum of probabilities per row of the transition matrix must be 1")
         if transition_matrix.min() < 0:
@@ -16,9 +15,9 @@ class MarkovChain:
         if len(states) != transition_matrix.shape[0]:
             raise ValueError("The number of status tags does not match the dimension of the transition matrix.")
 
-        self.P = transition_matrix.astype(np.float64)  # 转移矩阵
-        self.states = states  # 状态标签
-        self.state_indices = {s: i for i, s in enumerate(states)}  # 状态索引映射
+        self.P = transition_matrix.astype(np.float64)
+        self.states = states
+        self.state_indices = {s: i for i, s in enumerate(states)}
         self.current_state = None
         self.stationary_method = stationary_method
 
