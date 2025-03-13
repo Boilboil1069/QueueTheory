@@ -46,5 +46,8 @@ class numeric:
         else:
             raise ValueError('m must be z or c')
 
+    def generate(self, size: tuple[int, int], randomstate: int):
+        pass
+
 
 
