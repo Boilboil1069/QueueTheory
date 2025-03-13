@@ -12,7 +12,7 @@ setup(
     name = 'queuetheory',
     author = 'Manning',
     author_email = 'manningcyrus@qq.com',
-    version = '1.0.0',
+    version = '0.0.1',
     description = 'This package is used to conduct the queue model.',
     python_requires = '>=3.12',
     packages = find_packages(),
